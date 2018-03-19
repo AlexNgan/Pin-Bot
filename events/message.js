@@ -62,6 +62,6 @@ module.exports = (bot, message) => {
     message.flags.push(args.shift().slice(1));
   }
   // If the command exists, **AND** the user has permission, run it.
-  bot.logger.cmd(`[CMD] ${bot.config.permLevels.find(l => l.level === level).name} ${message.author.username} (${message.author.id}) ran command ${command.help.name}`);
+  bot.logger.command(`[CMD] ${bot.config.permLevels.find(l => l.level === level).name} ${message.author.username} (${message.author.id}) ran command ${command.help.name}`);
   command.run(bot, message, args, level);
 };
