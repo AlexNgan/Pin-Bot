@@ -13,7 +13,7 @@ const Enmap = require("enmap");
 const EnmapLevel = require("enmap-level");
 
 const config = require("./config.json");  //Allows config details to be stored secretly
-//require("./modules/functions.js")(bot); // Useful functions that we'll use throughout the bot, like logs and elevation features.
+require("./modules/functions.js")(bot); // Useful functions that we'll use throughout the bot, like logs and elevation features.
 //const fs = require("fs");
 
 // Aliases and commands are put in collections where they can be read from, catalogued, listed, etc.
