@@ -9,10 +9,10 @@ const config = require("./config.json");  //Allows config details to be stored s
 const fs = require("fs");
 
 // This loop reads the /events/ folder and attaches each event file to the appropriate event.
-fs.readdir("/events/", (err, files) => {
+fs.readdir("./events/", (err, files) => {
   if (err) return console.error(err);
   files.forEach(file => {
-    let eventFunction = require(`/events/${file}`);
+    let eventFunction = require(`./events/${file}`);
     let eventName = file.split(".")[0];
     // super-secret recipe to call events with all their proper arguments *after* the `client` var.
     bot.on(eventName, (...args) => eventFunction.run(bot, ...args));
@@ -30,7 +30,7 @@ bot.on("message", message => {
 
   // The list of if/else is replaced with those simple 2 lines:
   try {
-    let commandFile = require(`/commands/`); //Needs folder of commands.
+    let commandFile = require(`./commands/`); //Needs folder of commands.
     bot.log("log", `Loading ${commandFile.length} commands!`, 'LOAD ');
     commandFile.run(bot, message, args);
   } catch (err) {
