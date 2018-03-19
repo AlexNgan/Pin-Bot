@@ -1,5 +1,5 @@
 
-module.exports = (client) => {
+module.exports = (bot) => {
 
   /*
   PERMISSION LEVEL FUNCTION
@@ -32,7 +32,7 @@ module.exports = (client) => {
   const response = await client.awaitReply(msg, "Favourite Color?");
   msg.reply(`Oh, I really love ${response} too!`);
   */
-  client.awaitReply = async (msg, question, limit = 60000) => {
+  bot.awaitReply = async (msg, question, limit = 60000) => {
     const filter = m => m.author.id === msg.author.id;
     await msg.channel.send(question);
     try {
@@ -43,10 +43,10 @@ module.exports = (client) => {
     }
   };
 
-  client.loadCommand = (commandName) => {
+  bot.loadCommand = (commandName) => {
     try {
       const props = require(`../commands/${commandName}`);
-      cbot.logger.log(`Loading Command: ${props.help.name}. 👌`);
+      bot.logger.log(`Loading Command: ${props.help.name}. 👌`);
       if (props.init) {
         props.init(bot);
       }
@@ -64,13 +64,13 @@ module.exports = (client) => {
     let command;
     if (bot.commands.has(commandName)) {
       command = bot.commands.get(commandName);
-    } else if (client.aliases.has(commandName)) {
+    } else if (bot.aliases.has(commandName)) {
       command = bot.commands.get(bot.aliases.get(commandName));
     }
     if (!command) return `The command \`${commandName}\` doesn"t seem to exist, nor is it an alias. Try again!`;
 
     if (command.shutdown) {
-      await command.shutdown(client);
+      await command.shutdown(bot);
     }
     delete require.cache[require.resolve(`../commands/${commandName}.js`)];
     return false;

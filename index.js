@@ -13,6 +13,8 @@ const Enmap = require("enmap");
 const EnmapLevel = require("enmap-level");
 
 const config = require("./config.json");  //Allows config details to be stored secretly
+// Require our logger
+bot.logger = require("./util/Logger");
 require("./modules/functions.js")(bot); // Useful functions that we'll use throughout the bot, like logs and elevation features.
 //const fs = require("fs");
 
@@ -37,7 +39,7 @@ const defaultSettings = {
 const init = async () => {
   //Loads commands into memory.
   const commandFiles = await readdir('./commands/');
-  bot.log("log", `Loading ${commandFiles.length} commands!`, 'LOAD ');
+  bot.logger.log("log", `Loading ${commandFiles.length} commands!`, 'LOAD ');
   commandFiles.forEach(f => {
     if (!f.endsWith(".js")) return;
     const response = bot.loadCommand(f);
@@ -45,7 +47,7 @@ const init = async () => {
     	});
 
     	const eventFiles = await readdir('./events/');
-    	bot.log("log", `Loading ${eventFiles.length} events!`, 'LOAD ');
+    	bot.logger.log("log", `Loading ${eventFiles.length} events!`, 'LOAD ');
     	eventFiles.forEach(file => {
     		const eventName = file.split(".")[0];
     		const event = require(`./events/${file}`);
