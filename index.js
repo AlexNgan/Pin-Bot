@@ -57,8 +57,8 @@ const init = async () => {
     	eventFiles.forEach(file => {
     		const eventName = file.split(".")[0];
     		const event = require(`./events/${file}`);
-    		bot.on(eventName, event.bind(null, bot));
         console.log(event);
+    		bot.on(eventName, event.bind(null, bot));
     		delete require.cache[require.resolve(`./events/${file}`)];
     	});
 
