@@ -5,8 +5,11 @@
 
 const Discord = require('discord.js');  //bot runs on the Discord js module
 const bot = new Discord.Client();
+const readdir = promisify(require("fs").readdir);
 const config = require("./config.json");  //Allows config details to be stored secretly
-const fs = require("fs");
+//const fs = require("fs");
+bot.commands = new discord.Collection();
+bot.aliases = new discord.Collection();
 
     // super-secret recipe to call events with all their proper arguments *after* the `client` var.
     //bot.on(eventName, (...args) => eventFunction.run(bot, ...args));
