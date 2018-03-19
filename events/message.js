@@ -3,14 +3,14 @@
 // goes `client, other, args` when this function is run.
 
 module.exports = (bot, message) => {
-
-  //No reactions to bots.
+  // It's good practice to ignore other bots. This also makes your bot ignore itself
+  // and not get into a spam loop (we call that "botception").
   if (message.author.bot) return;
 
   // Grab the settings for this server from the PersistentCollection
   // If there is no guild, get default conf (DMs)
   const settings = message.guild
-    ? bott.settings.get(message.guild.id)
+    ? bot.settings.get(message.guild.id)
     : bot.config.defaultSettings;
 
   // For ease of use in commands and functions, we'll attach the settings
@@ -33,21 +33,21 @@ module.exports = (bot, message) => {
 
   // Check whether the command, or alias, exist in the collections defined
   // in app.js.
-  const command = bot.commands.get(command) || bot.commands.get(bot.aliases.get(command));
+  const cmd = bot.commands.get(command) || bot.commands.get(bot.aliases.get(command));
   // using this const varName = thing OR otherthign; is a pretty efficient
   // and clean way to grab one of 2 values!
-  if (!command) return;
+  if (!cmd) return;
 
   // Some commands may not be useable in DMs. This check prevents those commands from running
   // and return a friendly error message.
-  if (command && !message.guild && command.conf.guildOnly)
+  if (cmd && !message.guild && cmd.conf.guildOnly)
     return message.channel.send("This command is unavailable via private message. Please run this command in a guild.");
 
-  if (level < bot.levelCache[command.conf.permLevel]) {
+  if (level < bot.levelCache[cmd.conf.permLevel]) {
     if (settings.systemNotice === "true") {
       return message.channel.send(`You do not have permission to use this command.
   Your permission level is ${level} (${bot.config.permLevels.find(l => l.level === level).name})
-  This command requires level ${bot.levelCache[command.conf.permLevel]} (${command.conf.permLevel})`);
+  This command requires level ${bot.levelCache[cmd.conf.permLevel]} (${cmd.conf.permLevel})`);
     } else {
       return;
     }
@@ -62,6 +62,6 @@ module.exports = (bot, message) => {
     message.flags.push(args.shift().slice(1));
   }
   // If the command exists, **AND** the user has permission, run it.
-  bot.logger.command(`[CMD] ${bot.config.permLevels.find(l => l.level === level).name} ${message.author.username} (${message.author.id}) ran command ${command.help.name}`);
-  command.run(bot, message, args, level);
+  bot.logger.cmd(`[CMD] ${bot.config.permLevels.find(l => l.level === level).name} ${message.author.username} (${message.author.id}) ran command ${cmd.help.name}`);
+  cmd.run(bot, message, args, level);
 };
