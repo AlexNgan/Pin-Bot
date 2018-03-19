@@ -8,16 +8,37 @@ const bot = new Discord.Client();
 const config = require("./config.json");  //Allows config details to be stored secretly
 const fs = require("fs");
 
-// This loop reads the /events/ folder and attaches each event file to the appropriate event.
-fs.readdir("./events/", (err, files) => {
-  if (err) return console.error(err);
-  files.forEach(file => {
-    let eventFunction = require(`./events/${file}`);
-    let eventName = file.split(".")[0];
     // super-secret recipe to call events with all their proper arguments *after* the `client` var.
-    bot.on(eventName, (...args) => eventFunction.run(bot, ...args));
-  });
-});
+    //bot.on(eventName, (...args) => eventFunction.run(bot, ...args));
+
+    (async function() {
+    	const commandFiles = await readdir('./commands/');
+    	bot.log("log", `Loading ${commandFiles.length} commands!`, 'LOAD ');
+    	commandFiles.forEach(f => {
+    		try {
+    			let commandFile = require(`./commands/${f}`);
+    			bot.log("log", `Loading the ${commandFile.help.name} command!`, 'LOAD ');
+    			bot.commands.set(commandFile.help.name, commandFile);
+    			commandFile.conf.aliases.forEach(alias => {
+    				bot.aliases.set(alias, commandFile.help.name);
+    			});
+    		} catch (e) {
+    			bot.log(`Unable to load command ${f}: ${e}`);
+    		}
+    	});
+
+    	const eventFiles = await readdir('./events/');
+    	bot.log("log", `Loading ${eventFiles.length} events!`, 'LOAD ');
+    	eventFiles.forEach(file => {
+    		const eventName = file.split(".")[0];
+    		const event = require(`./events/${file}`);
+    		bot.on(eventName, event.bind(null, bot));
+    		delete require.cache[require.resolve(`./events/${file}`)];
+    	});
+
+      bot.login(config.token);  //Logs in bot by fetching token from config file.
+
+    }());
 
 //When a message is detected.
 bot.on("message", message => {
@@ -27,15 +48,4 @@ bot.on("message", message => {
   ///Pulls off prefix and leaves just command and args.
   const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
   const command = args.shift().toLowerCase();
-
-  // The list of if/else is replaced with those simple 2 lines:
-  try {
-    let commandFile = require(`./commands/`); //Needs folder of commands.
-    bot.log("log", `Loading ${commandFile.length} commands!`, 'LOAD ');
-    commandFile.run(bot, message, args);
-  } catch (err) {
-    console.error(err);
-  }
 });
-
-bot.login(config.token);  //Logs in bot by fetching token from config file.
