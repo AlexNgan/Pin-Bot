@@ -36,6 +36,12 @@ const defaultSettings = {
     // super-secret recipe to call events with all their proper arguments *after* the `client` var.
     //bot.on(eventName, (...args) => eventFunction.run(bot, ...args));
 
+    bot.on("ready", () => {
+      // This event will run if the bot starts, and logs in, successfully.
+      console.log(`Bot has started, with ${bot.users.size} users, in ${bot.channels.size} channels of ${bot.guilds.size} guilds.`);
+      bot.user.setActivity(`on ${bot.guilds.size} servers`);
+    });
+
 const init = async () => {
   //Loads commands into memory.
   const commandFiles = await readdir('./commands/');
@@ -44,7 +50,7 @@ const init = async () => {
     if (!f.endsWith(".js")) return;
     const response = bot.loadCommand(f);
     if (response) console.log(response);
-    	});
+  });
 
     	const eventFiles = await readdir('./events/');
     	bot.logger.log("log", `Loading ${eventFiles.length} events!`, 'LOAD ');
