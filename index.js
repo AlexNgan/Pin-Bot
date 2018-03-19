@@ -8,53 +8,33 @@ const bot = new Discord.Client();
 const config = require("./config.json");  //Allows config details to be stored secretly
 const fs = require("fs");
 
+// This loop reads the /events/ folder and attaches each event file to the appropriate event.
+fs.readdir("./events/", (err, files) => {
+  if (err) return console.error(err);
+  files.forEach(file => {
+    let eventFunction = require(`./events/${file}`);
+    let eventName = file.split(".")[0];
+    // super-secret recipe to call events with all their proper arguments *after* the `client` var.
+    bot.on(eventName, (...args) => eventFunction.run(bot, ...args));
+  });
+});
 
-exports.run = (bot, message, args, level) => {
-message.channel.fetchMessages({limit: 1, around: args[0]})
-    .then(messages=> {
-        const msg = messages.first();
-        var HallOfFame = msg.guild.channels.find('name', 'hall-of-fame');
-        if (!HallOfFame) return;
-        if (message.reactions.me) return;
-        msg.react("320770131741376512");
-        const HoF = new Discord.RichEmbed();
-            HoF.setColor(`${msg.member.displayHexColor}`)
-            .setFooter('Hall of Fame 🏆')
-            .setTimestamp()
+//When a message is detected.
+bot.on("message", message => {
+  if (message.author.bot) return;
+  if(message.content.indexOf(config.prefix) !== 0) return;
 
-        //If poster had no nickname...use their regular discord name.
-        if (msg.member.nickname == null) {
-            HoF.addField('User',`${msg.author.username}`, true)
-        } else {
-            HoF.addField('User',`${msg.member.nickname} (${msg.author.username})`, true);
-        };
+  ///Pulls off prefix and leaves just command and args.
+  const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
+  const command = args.shift().toLowerCase();
 
-        HoF.addField('Channel', `${msg.channel.name}`, true)
-        if (msg.attachments.size==0) {
-            HoF.addField('Message', `${msg}`)
-        } else {
-            pictures = msg.attachments.array();
-            if (msg != "") {
-                HoF.addField('Message', `${msg}`)
-            }
-            HoF.setImage(pictures[0].url)
-        }
-        HallOfFame.send({embed: HoF});
-        message.channel.send('Message successfully added!')
-    });
-};
-
-exports.conf = {
-    enabled: true,
-    guildOnly: false,
-    aliases: ['hof', 'halloffame'],
-    permLevel: 2
-};
-
-exports.help = {
-    name: 'HoF',
-    description: 'Adds a message to Hall of Fame manually, if it didn\'t get added for whatever reason',
-    usage: 'HoF <messageID (found by clicking on the three dots next to the message, with developer mode on)'
-};
+  // The list of if/else is replaced with those simple 2 lines:
+  try {
+    let commandFile = require(`./commands/`); //Needs folder of commands.
+    commandFile.run(bot, message, args);
+  } catch (err) {
+    console.error(err);
+  }
+});
 
 bot.login(config.token);  //Logs in bot by fetching token from config file.
