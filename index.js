@@ -19,11 +19,11 @@ bot.aliases = new Discord.Collection();
 
     (async function() {
     	const commandFiles = await readdir('./commands/');
-    	bot.log("log", `Loading ${commandFiles.length} commands!`, 'LOAD ');
+    	//bot.log("log", `Loading ${commandFiles.length} commands!`, 'LOAD ');
     	commandFiles.forEach(f => {
     		try {
     			let commandFile = require(`./commands/${f}`);
-    			bot.log("log", `Loading the ${commandFile.help.name} command!`, 'LOAD ');
+    			//bot.log("log", `Loading the ${commandFile.help.name} command!`, 'LOAD ');
     			bot.commands.set(commandFile.help.name, commandFile);
     			commandFile.conf.aliases.forEach(alias => {
     				bot.aliases.set(alias, commandFile.help.name);
@@ -34,7 +34,7 @@ bot.aliases = new Discord.Collection();
     	});
 
     	const eventFiles = await readdir('./events/');
-    	bot.log("log", `Loading ${eventFiles.length} events!`, 'LOAD ');
+    	//bot.log("log", `Loading ${eventFiles.length} events!`, 'LOAD ');
     	eventFiles.forEach(file => {
     		const eventName = file.split(".")[0];
     		const event = require(`./events/${file}`);
