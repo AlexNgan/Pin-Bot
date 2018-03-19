@@ -6,7 +6,7 @@ Because of the way require() works in node, if you modify any of the command fil
 The Reload command does just that, simply deletes the cache so the next time that specific command is run, it'll refresh its code from the file.
 */
 
-exports.run = (client, message, args) => {
+exports.run = (bot, message, args) => {
   if(!args || args.size < 1) return message.reply("Must provide a command name to reload.");
   // the path is relative to the *current folder*, so just ./filename.js
   delete require.cache[require.resolve(`./${args[0]}.js`)];

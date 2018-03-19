@@ -12,7 +12,7 @@ const fs = require("fs");
 fs.readdir("./events/", (err, files) => {
   if (err) return console.error(err);
   files.forEach(file => {
-    let eventFunction = require(`./events/${file}`);
+    let eventFunction = require(`/events/${file}`);
     let eventName = file.split(".")[0];
     // super-secret recipe to call events with all their proper arguments *after* the `client` var.
     bot.on(eventName, (...args) => eventFunction.run(bot, ...args));
@@ -30,9 +30,11 @@ bot.on("message", message => {
 
   // The list of if/else is replaced with those simple 2 lines:
   try {
-    let commandFile = require(`./commands/`); //Needs folder of commands.
+    let commandFile = require(`/commands/`); //Needs folder of commands.
+    bot.log("log", `Loading ${commandFile.length} commands!`, 'LOAD ');
     commandFile.run(bot, message, args);
   } catch (err) {
+    bot.log(`Unable to load command ${f}: ${e}`);
     console.error(err);
   }
 });
