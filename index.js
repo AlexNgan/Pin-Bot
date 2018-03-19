@@ -7,8 +7,13 @@ const Discord = require('discord.js');  //bot runs on the Discord js module
 const {promisify} = require('util');
 const bot = new Discord.Client();
 const readdir = promisify(require("fs").readdir);
+
+//Stores shit.
 const Enmap = require("enmap");
 const EnmapLevel = require("enmap-level");
+const tableSource = new EnmapLevel({name: "table"});
+bot.table = new Enmap({provider: tableSource});
+
 const config = require("./config.json");  //Allows config details to be stored secretly
 require("./modules/functions.js")(bot); // Useful functions that we'll use throughout the bot, like logs and elevation features.
 //const fs = require("fs");
