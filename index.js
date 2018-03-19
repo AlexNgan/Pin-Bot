@@ -34,7 +34,6 @@ bot.on("message", message => {
     bot.log("log", `Loading ${commandFile.length} commands!`, 'LOAD ');
     commandFile.run(bot, message, args);
   } catch (err) {
-    bot.log(`Unable to load command ${f}: ${e}`);
     console.error(err);
   }
 });
